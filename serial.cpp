@@ -23,7 +23,7 @@ inline void WriteProtocolHead(SerialComm::MessageType type, uint32_t mask, CobsP
 template <std::size_t N>
 inline void WriteToOutput(CobsPayload<N>& payload, void (*f)(uint8_t*, size_t) = nullptr) {
     auto package = payload.Encode();
-    Serial.write(package.data, package.length);
+    Serial1.write(package.data, package.length);
     if (f)
         f(package.data, package.length);
 }
@@ -38,8 +38,11 @@ SerialComm::SerialComm(State* state, const volatile uint16_t* ppm, const Control
 }
 
 void SerialComm::ReadData() {
-    while (Serial.available()) {
-        data_input.AppendToBuffer(Serial.read());
+    while (Serial1.available()) {
+        bluetooth.update();
+        if (!bluetooth.isConnected())
+            continue;
+        data_input.AppendToBuffer(Serial1.read());
 
         if (!data_input.IsDone())
             continue;
