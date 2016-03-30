@@ -53,11 +53,7 @@ Bluetooth::Bluetooth(uint32_t baud_rate) {
 }
 
 void Bluetooth::update() {
-    if (isConnected())
-        return;
-    // TODO: ACTUALLY FINISH THIS STATE MACHINE
-    // static_assert(false, "FAIL");
-    while (Serial1.available()) {
+    while (!isConnected() && Serial1.available()) {
         int c{Serial1.read()};
         if (c == EXPECTED_CHAR[read_state])
             read_state = read_state + 1;
