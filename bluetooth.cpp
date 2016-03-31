@@ -60,9 +60,16 @@ bool Bluetooth::read() {
         else if (read_state != CR2)
             read_state = WAIT;
     }
-    while (!data_input.IsDone() && isConnected() && Serial1.available())
+    while (isConnected() && Serial1.available()) {
         data_input.AppendToBuffer(Serial1.read());
-    return data_input.IsDone();
+        if (data_input.IsDone())
+            return true;
+    }
+    return false;
+}
+
+void Bluetooth::write(uint8_t* data, size_t length) {
+    Serial1.write(data, length);
 }
 
 CobsReaderBuffer& Bluetooth::buffer() {

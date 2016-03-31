@@ -19,17 +19,6 @@ class Control;
 class LED;
 class State;
 
-class USBComm {
-   public:
-    USBComm();
-
-    bool read();
-    CobsReaderBuffer& buffer();
-
-   private:
-    CobsReaderBuffer data_input;
-};
-
 class SerialComm {
    public:
     enum class MessageType : uint8_t {
@@ -98,17 +87,7 @@ class SerialComm {
 
     explicit SerialComm(State* state, const volatile uint16_t* ppm, const Control* control, CONFIG_union* config, LED* led);
 
-    template <class T>
-    void ReadData(T&& receiver) {
-        while (receiver.read())
-            ProcessData(receiver.buffer());
-    }
-
-    template <class T, class... Targs>
-    void ReadData(T&& receiver, Targs&&... args) {
-        ReadData(receiver);
-        ReadData(args...);
-    }
+    void Read();
 
     void SendConfiguration() const;
     void SendDebugString(const String& string, MessageType type = MessageType::DebugString) const;
@@ -119,9 +98,9 @@ class SerialComm {
     void SetStateMsg(uint32_t values);
     void AddToStateMsg(uint32_t values);
     void RemoveFromStateMsg(uint32_t values);
+    void ProcessData(CobsReaderBuffer& data_input);
 
    private:
-    void ProcessData(CobsReaderBuffer& data_input);
     uint16_t PacketSize(uint32_t mask) const;
 
     State* state;

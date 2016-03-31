@@ -36,7 +36,6 @@
 #include "debug.h"
 #include "version.h"
 #include "board.h"
-#include "bluetooth.h"
 
 struct Systems {
     // subsystem objects initialize pins when created
@@ -76,9 +75,6 @@ Systems::Systems()
 {
 }
 
-USBComm usb_comm;
-Bluetooth bluetooth{115200};
-
 void setup() {
     config_handler = [&](CONFIG_struct& config){
       sys.control.parseConfig(config);
@@ -91,9 +87,6 @@ void setup() {
     };
 
     debug_serial_comm = &sys.conf;
-
-    // setup USB debug serial
-    Serial.begin(9600);  // USB is always 12 Mbit/sec
 
     // MPU9250 is limited to 400kHz bus speed.
     Wire.begin(I2C_MASTER, 0x00, board::I2C_PINS, board::I2C_PULLUP, I2C_RATE_400);  // For I2C pins 18 and 19
@@ -268,7 +261,7 @@ bool ProcessTask<100>() {
         sys.state.clear(STATUS_SET_MPU_BIAS);
     }
 
-    sys.conf.ReadData(usb_comm, bluetooth);  // Respond to commands from the Configurator chrome extension
+    sys.conf.Read();  // Respond to commands from the Configurator chrome extension
 
     return true;
 }

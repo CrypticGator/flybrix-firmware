@@ -20,6 +20,7 @@ class Bluetooth {
     explicit Bluetooth(uint32_t baud_rate);
 
     bool read();
+    void write(uint8_t* data, size_t length);
     bool isConnected() const;
 
     CobsReaderBuffer& buffer();
