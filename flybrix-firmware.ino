@@ -36,6 +36,7 @@
 #include "debug.h"
 #include "version.h"
 #include "board.h"
+#include "bluetooth.h"
 
 struct Systems {
     // subsystem objects initialize pins when created
@@ -74,6 +75,9 @@ Systems::Systems()
       conf{&state, RX, &control, &CONFIG, &led}  // listen for configuration inputs
 {
 }
+
+USBComm usb_comm;
+Bluetooth bluetooth{115200};
 
 void setup() {
     config_handler = [&](CONFIG_struct& config){
@@ -264,7 +268,7 @@ bool ProcessTask<100>() {
         sys.state.clear(STATUS_SET_MPU_BIAS);
     }
 
-    sys.conf.ReadData();  // Respond to commands from the Configurator chrome extension
+    sys.conf.ReadData(usb_comm, bluetooth);  // Respond to commands from the Configurator chrome extension
 
     return true;
 }

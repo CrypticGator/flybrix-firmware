@@ -52,7 +52,7 @@ Bluetooth::Bluetooth(uint32_t baud_rate) {
     connect();
 }
 
-void Bluetooth::update() {
+bool Bluetooth::read() {
     while (!isConnected() && Serial1.available()) {
         int c{Serial1.read()};
         if (c == EXPECTED_CHAR[read_state])
@@ -60,6 +60,13 @@ void Bluetooth::update() {
         else if (read_state != CR2)
             read_state = WAIT;
     }
+    while (!data_input.IsDone() && isConnected() && Serial1.available())
+        data_input.AppendToBuffer(Serial1.read());
+    return data_input.IsDone();
+}
+
+CobsReaderBuffer& Bluetooth::buffer() {
+    return data_input;
 }
 
 bool Bluetooth::isConnected() const {

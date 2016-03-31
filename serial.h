@@ -12,13 +12,23 @@
 #define serial_h
 
 #include <Arduino.h>
-#include "bluetooth.h"
 #include "cobs.h"
 
 union CONFIG_union;
 class Control;
 class LED;
 class State;
+
+class USBComm {
+   public:
+    USBComm();
+
+    bool read();
+    CobsReaderBuffer& buffer();
+
+   private:
+    CobsReaderBuffer data_input;
+};
 
 class SerialComm {
    public:
@@ -88,7 +98,17 @@ class SerialComm {
 
     explicit SerialComm(State* state, const volatile uint16_t* ppm, const Control* control, CONFIG_union* config, LED* led);
 
-    void ReadData();
+    template <class T>
+    void ReadData(T&& receiver) {
+        while (receiver.read())
+            ProcessData(receiver.buffer());
+    }
+
+    template <class T, class... Targs>
+    void ReadData(T&& receiver, Targs&&... args) {
+        ReadData(receiver);
+        ReadData(args...);
+    }
 
     void SendConfiguration() const;
     void SendDebugString(const String& string, MessageType type = MessageType::DebugString) const;
@@ -101,8 +121,7 @@ class SerialComm {
     void RemoveFromStateMsg(uint32_t values);
 
    private:
-    void ProcessData();
-
+    void ProcessData(CobsReaderBuffer& data_input);
     uint16_t PacketSize(uint32_t mask) const;
 
     State* state;
@@ -110,10 +129,8 @@ class SerialComm {
     const Control* control;
     CONFIG_union* config;
     LED* led;
-    Bluetooth bluetooth{115200};
     uint16_t send_state_delay{1001};  // anything over 1000 turns off state messages
     uint32_t state_mask{0x7fffff};
-    CobsReader<500> data_input;
 };
 
 #endif

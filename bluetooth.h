@@ -13,13 +13,16 @@
 #define BLUETOOTH_H
 
 #include <cstdint>
+#include "cobs.h"
 
 class Bluetooth {
    public:
     explicit Bluetooth(uint32_t baud_rate);
 
-    void update();
+    bool read();
     bool isConnected() const;
+
+    CobsReaderBuffer& buffer();
 
    private:
     enum ReadState { WAIT = 0, CR1 = 1, LF1 = 2, C = 3, O = 4, N = 5, CR2 = 6, DONE = 7 };
@@ -27,6 +30,7 @@ class Bluetooth {
 
     char baud_case{0};
     uint8_t read_state{WAIT};
+    CobsReaderBuffer data_input;
 };
 
 #endif
