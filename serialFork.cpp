@@ -11,7 +11,6 @@
 #include "serialFork.h"
 #include <Arduino.h>
 #include "bluetooth.h"
-#include "serial.h"
 
 namespace {
 struct USBComm {
@@ -41,23 +40,18 @@ struct USBComm {
 };
 
 template <class T>
-void ReadData(SerialComm* handler, T&& receiver) {
+void ReadData(BufferProcessorInterface* handler, T&& receiver) {
     while (receiver.read())
         handler->ProcessData(receiver.buffer());
-}
-
-template <class T, class... Targs>
-void ReadData(SerialComm* handler, T&& receiver, Targs&&... args) {
-    ReadData(handler, receiver);
-    ReadData(handler, args...);
 }
 
 USBComm usb_comm;
 Bluetooth bluetooth{115200};
 }
 
-void readSerial(SerialComm* handler) {
-    ReadData(handler, usb_comm, bluetooth);
+void readSerial(BufferProcessorInterface* handler) {
+    ReadData(handler, usb_comm);
+    ReadData(handler, bluetooth);
 }
 
 void writeSerial(uint8_t* data, size_t length) {

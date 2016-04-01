@@ -11,7 +11,6 @@
 #include "config.h"  //CONFIG variable
 #include "control.h"
 #include "led.h"
-#include "serialFork.h"
 
 namespace {
 using CobsPayloadGeneric = CobsPayload<500>;  // impacts memory use only; packet size should be <= client packet size

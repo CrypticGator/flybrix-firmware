@@ -13,13 +13,14 @@
 
 #include <Arduino.h>
 #include "cobs.h"
+#include "serialFork.h"
 
 union CONFIG_union;
 class Control;
 class LED;
 class State;
 
-class SerialComm {
+class SerialComm : public BufferProcessorInterface {
    public:
     enum class MessageType : uint8_t {
         State = 0,
@@ -98,7 +99,7 @@ class SerialComm {
     void SetStateMsg(uint32_t values);
     void AddToStateMsg(uint32_t values);
     void RemoveFromStateMsg(uint32_t values);
-    void ProcessData(CobsReaderBuffer& data_input);
+    void ProcessData(CobsReaderBuffer& data_input) override;
 
    private:
     uint16_t PacketSize(uint32_t mask) const;
