@@ -314,39 +314,7 @@ bool ProcessTask<10>() {
 
 template <>
 bool ProcessTask<1>() {
-#ifdef DEBUG
-    float elapsed_seconds = (micros() - start_time) / 1000000.0;
-    Serial.print("DEBUG: elapsed time (seconds)   = ");
-    Serial.println(elapsed_seconds);
-    Serial.print("DEBUG: main loop rate (Hz)      = ");
-    Serial.println(sys.state.loopCount / elapsed_seconds);
-    Serial.print("DEBUG: state update rate (Hz)   = ");
-    Serial.println(state_updates / elapsed_seconds);
-    Serial.print("DEBUG: control update rate (Hz) = ");
-    Serial.println(control_updates / elapsed_seconds);
-    Serial.print("DEBUG: mpu read rate (Hz) = ");
-    Serial.println(mpu_reads / elapsed_seconds);
-    Serial.print("DEBUG: mag read rate (Hz) = ");
-    Serial.println(mag_reads / elapsed_seconds);
-    Serial.print("DEBUG: bmp read rate (Hz) = ");
-    Serial.println(bmp_reads / elapsed_seconds);
-    Serial.print("DEBUG: pwr read rate (Hz) = ");
-    Serial.println(pwr_reads / elapsed_seconds);
-    Serial.print("DEBUG: 500Hz rate (Hz) = ");
-    Serial.println(iterations_at_500Hz / elapsed_seconds);
-    Serial.print("DEBUG: 100Hz rate (Hz) = ");
-    Serial.println(iterations_at_100Hz / elapsed_seconds);
-    Serial.print("DEBUG:  40Hz rate (Hz) = ");
-    Serial.println(iterations_at_40Hz / elapsed_seconds);
-    Serial.print("DEBUG:  10Hz rate (Hz) = ");
-    Serial.println(iterations_at_10Hz / elapsed_seconds);
-    Serial.print("DEBUG:   1Hz rate (Hz) = ");
-    Serial.println(iterations_at_1Hz / elapsed_seconds);
-    Serial.print("DEBUG: interrupt wait rate (Hz) = ");
-    Serial.println(interrupt_waits / elapsed_seconds);
-    Serial.println("");
-#endif
-
+    // We keep this task since we frequently use it to send debug data during testing
     return true;
 }
 

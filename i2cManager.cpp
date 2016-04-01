@@ -8,6 +8,7 @@
 
 #include "i2cManager.h"
 #include <i2c_t3.h>
+#include "debug.h"
 
 void I2CManager::addTransfer(uint8_t address, uint8_t send_count, uint8_t *send_data, uint8_t receive_count, uint8_t *receive_data, CallbackProcessor *cb_object) {
     I2CTransfer *new_transfer = (I2CTransfer *)malloc(sizeof(I2CTransfer));
@@ -74,10 +75,7 @@ uint8_t I2CManager::readBytes(uint8_t address, uint8_t subAddress, uint8_t count
     int error;
 
 #ifdef BMP280_SERIAL_DEBUG
-    Serial.print("attempting read register 0x");
-    Serial.print(subAddress, HEX);
-    Serial.print(" from address 0x");
-    Serial.println(address, HEX);
+    DebugPrintf("Attempting read register 0x%X from address 0x%X", subAddress, address);
 #endif
 
     Wire.beginTransmission(address);
@@ -91,8 +89,7 @@ uint8_t I2CManager::readBytes(uint8_t address, uint8_t subAddress, uint8_t count
             dest[i] = Wire.read();
 
 #ifdef BMP280_SERIAL_DEBUG
-            Serial.print("received 0x");
-            Serial.println(dest[i], HEX);
+    DebugPrintf("Received 0x%X", dest[i]);
 #endif
         }
 
