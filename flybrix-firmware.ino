@@ -148,22 +148,26 @@ uint32_t pwr_reads = 0;
 
 uint32_t low_battery_counter = 0;
 
-#define DEF_PROCESS_VARIABLES(F) uint32_t iterations_at_##F##Hz = 0;
-
-/* F is target frequency, D is a tuning factor */
-#define RUN_PROCESS(F)                               \
-    iterations_at_##F##Hz = RunProcess<F>(micros()); \
-    sys.i2c.update();
-
-DEF_PROCESS_VARIABLES(1000)
-DEF_PROCESS_VARIABLES(500)
-DEF_PROCESS_VARIABLES(100)
-DEF_PROCESS_VARIABLES(40)
-DEF_PROCESS_VARIABLES(10)
-DEF_PROCESS_VARIABLES(1)
-
 template <uint32_t f>
 uint32_t RunProcess(uint32_t start);
+
+template <uint32_t... Freqs>
+struct freqlist{};
+
+void RunProcessesHelper(freqlist<>) {
+}
+
+template <uint32_t F, uint32_t... Fargs>
+void RunProcessesHelper(freqlist<F, Fargs...>) {
+    RunProcess<F>(micros());
+    sys.i2c.update();
+    RunProcessesHelper(freqlist<Fargs...>());
+}
+
+template <uint32_t... Freqs>
+void RunProcesses() {
+    RunProcessesHelper(freqlist<Freqs...>());
+}
 
 template <uint32_t f>
 bool ProcessTask();
@@ -207,13 +211,7 @@ void loop() {
         sys.motors.updateAllChannels();
     }
 
-    RUN_PROCESS(1000)
-    RUN_PROCESS(500)
-    RUN_PROCESS(500)
-    RUN_PROCESS(100)
-    RUN_PROCESS(40)
-    RUN_PROCESS(10)
-    RUN_PROCESS(1)
+    RunProcesses<1000, 500, 100, 40, 10, 1>();
 }
 
 uint32_t eeprom_log_start = EEPROM_LOG_START;
