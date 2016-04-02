@@ -14,14 +14,7 @@
 #include <cstdint>
 #include "cobs.h"
 
-class BufferProcessorInterface {
-   public:
-    virtual ~BufferProcessorInterface() = default;
-
-    virtual void ProcessData(CobsReaderBuffer&) = 0;
-};
-
-void readSerial(BufferProcessorInterface* handler);
+CobsReaderBuffer* readSerial();
 void writeSerial(uint8_t* data, size_t length);
 
 #endif

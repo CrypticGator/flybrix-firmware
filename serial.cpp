@@ -6,6 +6,7 @@
 
 #include "serial.h"
 #include <functional>
+#include "serialFork.h"
 #include "state.h"
 
 #include "config.h"  //CONFIG variable
@@ -39,7 +40,12 @@ SerialComm::SerialComm(State* state, const volatile uint16_t* ppm, const Control
 }
 
 void SerialComm::Read() {
-    readSerial(this);
+    for (;;) {
+        CobsReaderBuffer* buffer{readSerial()};
+        if (buffer == nullptr)
+            return;
+        ProcessData(*buffer);
+    }
 }
 
 void SerialComm::ProcessData(CobsReaderBuffer& data_input) {

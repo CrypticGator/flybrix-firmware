@@ -39,19 +39,16 @@ struct USBComm {
     CobsReaderBuffer data_input;
 };
 
-template <class T>
-void ReadData(BufferProcessorInterface* handler, T&& receiver) {
-    while (receiver.read())
-        handler->ProcessData(receiver.buffer());
-}
-
 USBComm usb_comm;
 Bluetooth bluetooth{115200};
 }
 
-void readSerial(BufferProcessorInterface* handler) {
-    ReadData(handler, usb_comm);
-    ReadData(handler, bluetooth);
+CobsReaderBuffer* readSerial() {
+    if (usb_comm.read())
+        return &usb_comm.buffer();
+    if (bluetooth.read())
+        return &bluetooth.buffer();
+    return nullptr;
 }
 
 void writeSerial(uint8_t* data, size_t length) {
