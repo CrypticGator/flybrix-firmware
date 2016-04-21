@@ -15,6 +15,7 @@
 #include "cobs.h"
 
 union CONFIG_union;
+class PilotCommand;
 class Control;
 class LED;
 class State;
@@ -51,6 +52,7 @@ class SerialComm {
         COM_SET_STATE_DELAY = 1 << 15,
         COM_REQ_HISTORY = 1 << 16,
         COM_SET_LED = 1 << 17,
+        COM_SET_SERIAL_RC = 1 << 18,
     };
 
     enum StateFields : uint32_t {
@@ -85,7 +87,7 @@ class SerialComm {
         STATE_LOOP_COUNT = 1 << 27,
     };
 
-    explicit SerialComm(State* state, const volatile uint16_t* ppm, const Control* control, CONFIG_union* config, LED* led);
+    explicit SerialComm(State* state, const volatile uint16_t* ppm, const Control* control, CONFIG_union* config, LED* led, PilotCommand* command);
 
     void Read();
 
@@ -108,6 +110,7 @@ class SerialComm {
     const Control* control;
     CONFIG_union* config;
     LED* led;
+    PilotCommand* command;
     uint16_t send_state_delay{1001};  // anything over 1000 turns off state messages
     uint32_t state_mask{0x7fffff};
 };
