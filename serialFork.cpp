@@ -11,6 +11,7 @@
 #include "serialFork.h"
 #include <Arduino.h>
 #include "bluetooth.h"
+#include "board.h"
 
 namespace {
 struct USBComm {
@@ -40,18 +41,24 @@ struct USBComm {
 };
 
 USBComm usb_comm;
+#ifndef ALPHA
 Bluetooth bluetooth{115200};
+#endif
 }
 
 CobsReaderBuffer* readSerial() {
     if (usb_comm.read())
         return &usb_comm.buffer();
+#ifndef ALPHA
     if (bluetooth.read())
         return &bluetooth.buffer();
+#endif
     return nullptr;
 }
 
 void writeSerial(uint8_t* data, size_t length) {
     usb_comm.write(data, length);
+#ifndef ALPHA
     bluetooth.write(data, length);
+#endif
 }

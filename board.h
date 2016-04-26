@@ -14,6 +14,8 @@
 #include <Arduino.h>
 #include <i2c_t3.h>
 
+#define ALPHA
+
 namespace board {
 inline namespace alpha {
 enum Pins : uint8_t {
