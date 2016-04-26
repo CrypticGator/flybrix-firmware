@@ -22,7 +22,7 @@ void R415X::initialize_isr(void) {
     pinMode(board::RX_DAT, INPUT);  // WE ARE ASSUMING RX_DAT IS PIN 3 IN FTM1 SETUP!
 
     for (uint8_t i = 0; i <= RC_CHANNEL_COUNT; i++) {
-        RX[i] = 1500;
+        RX[i] = 1100;
     }
 
     // FLEX Timer1 input filter configuration
