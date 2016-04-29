@@ -211,31 +211,24 @@ void loop() {
         sys.motors.updateAllChannels();
     }
 
-    RunProcesses<1000, 500, 100, 40, 10, 1>();
+    RunProcesses<1000, 100, 40, 30, 10, 1>();
 }
-
-uint32_t eeprom_log_start = EEPROM_LOG_START;
 
 template <>
 bool ProcessTask<1000>() {
     static uint16_t counter{0};
     if (++counter > sys.conf.GetSendStateDelay() - 1) {
         counter = 0;
-        sys.conf.SendState(micros(), [&](uint8_t* data, size_t length) {
-            if (eeprom_log_start + length >= EEPROM_LOG_END) {
-                sys.state.set(STATUS_LOG_FULL);
-                return;
-            }
-            for (size_t i = 0; i < length; ++i)
-                EEPROM.write(eeprom_log_start++, data[i]);
-        });
+        sys.conf.SendState(micros());
     }
     counter %= 1000;
+    if (LEDFastUpdate)
+        LEDFastUpdate();
     return true;
 }
 
 template <>
-bool ProcessTask<500>() {
+bool ProcessTask<30>() {
     sys.led.update();  // update quickly to support color dithering
     return true;
 }
